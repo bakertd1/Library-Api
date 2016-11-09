@@ -91,3 +91,4 @@ C:\Users\Dillon\Documents\Library\Library-Api\Library\Library\obj\Debug\Library.
 C:\Users\Dillon\Documents\Library\Library-Api\Library\Library\obj\Debug\Library.Migrations.InitialMigration.resources
 C:\Users\Dillon\Documents\Library\Library-Api\Library\Library\obj\Debug\Library.csproj.GenerateResource.Cache
 C:\Users\Dillon\Documents\Library\Library-Api\Library\Library\obj\Debug\Library.Migrations.AddBook.resources
+C:\Users\Dillon\Documents\Library\Library-Api\Library\Library\obj\Debug\Library.Migrations.AddAuthor.resources
