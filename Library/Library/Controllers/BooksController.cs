@@ -58,7 +58,10 @@ namespace Library.Controllers
 
             _context.SaveChanges();
 
-            return Ok(bookInDb);
+            //needed to return author data alongside book data
+            var addedBook = _context.Books.Include(b => b.Author).Single(b => b.Id == bookInDb.Id);
+
+            return Ok(addedBook);
         }
 
         [HttpPut]

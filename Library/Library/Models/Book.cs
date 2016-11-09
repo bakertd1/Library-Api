@@ -20,7 +20,7 @@ namespace Library.Models
         [Required]
         public string Publisher { get; set; }
 
-        public DateTime PublicatonDate { get; set; }
+        public DateTime PublicationDate { get; set; }
 
         public int NumberOfPages { get; set; }
     }

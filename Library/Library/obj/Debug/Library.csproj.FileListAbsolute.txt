@@ -187,3 +187,7 @@ C:\Users\Dillon\Documents\Library\Library\Library\obj\Debug\Library.csproj.Gener
 C:\Users\Dillon\Documents\Library\Library\Library\obj\Debug\Library.dll
 C:\Users\Dillon\Documents\Library\Library\Library\obj\Debug\Library.pdb
 C:\Users\Dillon\Documents\Library\Library\Library\obj\Debug\Library.Migrations.SeedUsers.resources
+C:\Users\Dillon\Documents\Library\Library\Library\bin\System.Web.Cors.dll
+C:\Users\Dillon\Documents\Library\Library\Library\bin\System.Web.Http.Cors.dll
+C:\Users\Dillon\Documents\Library\Library\Library\bin\System.Web.Http.Cors.xml
+C:\Users\Dillon\Documents\Library\Library\Library\obj\Debug\Library.Migrations.FixTypoInBook.resources
