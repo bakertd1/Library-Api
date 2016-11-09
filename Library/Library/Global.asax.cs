@@ -19,5 +19,16 @@ namespace Library
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        /// <summary>
+        /// Needed to allow cors http requests that have a preflight request
+        /// </summary>
+        protected void Application_BeginRequest()
+        {
+            if (Request.Headers.AllKeys.Contains("Origin") && Request.HttpMethod == "OPTIONS")
+            {
+                Response.Flush();
+            }
+        }
     }
 }
