@@ -85,6 +85,10 @@ namespace Library.Controllers
             if (author == null)
                 return NotFound();
 
+            //get all the books associated with this author and delete them as well
+            var books = _context.Books.Where(b => b.AuthorId == author.Id);
+            _context.Books.RemoveRange(books);
+
             _context.Authors.Remove(author);
 
             _context.SaveChanges();
