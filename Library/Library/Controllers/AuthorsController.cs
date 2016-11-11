@@ -9,6 +9,7 @@ using System.Web.Http;
 
 namespace Library.Controllers
 {
+    [Authorize]
     public class AuthorsController : ApiController
     {
         private ApplicationDbContext _context;
