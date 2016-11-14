@@ -46,6 +46,7 @@ namespace Library.Controllers
             return Ok(author);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public IHttpActionResult AddAuthor(Author author)
         {
@@ -62,6 +63,7 @@ namespace Library.Controllers
             return Ok(authorInDb);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public IHttpActionResult UpdateAuthor(int id, Author author)
         {
@@ -78,6 +80,7 @@ namespace Library.Controllers
             return Ok(author);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete]
         public IHttpActionResult DeleteAuthor(int id)
         {
