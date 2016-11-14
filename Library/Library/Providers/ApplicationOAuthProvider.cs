@@ -10,6 +10,7 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using Library.Models;
+using System.Web.Security;
 
 namespace Library.Providers
 {
@@ -44,8 +45,16 @@ namespace Library.Providers
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
-            List<Claim> roles = oAuthIdentity.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-            AuthenticationProperties properties = CreateProperties(user.UserName, Newtonsoft.Json.JsonConvert.SerializeObject(roles.Select(x => x.Value)));
+            bool isUserAdmin = false;
+            try
+            {
+                isUserAdmin = userManager.IsInRole(user.Id, "admin");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            AuthenticationProperties properties = CreateProperties(user.UserName, isUserAdmin);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
@@ -87,13 +96,17 @@ namespace Library.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName, string Roles)
+        public static AuthenticationProperties CreateProperties(string userName, bool isAdmin = false)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName },
-                { "role", Roles }
+                { "userName", userName }
             };
+
+            if(isAdmin)
+            {
+                data.Add("role", "admin");
+            }
             return new AuthenticationProperties(data);
         }
     }
