@@ -1,4 +1,5 @@
 ﻿using Library.Models;
+using Library.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -23,7 +24,7 @@ namespace Library.Controllers
         {
             _context.Dispose();
         }
-        
+
         [HttpGet]
         public IHttpActionResult GetAuthors()
         {
@@ -32,7 +33,9 @@ namespace Library.Controllers
             if (authors == null)
                 return NotFound();
 
-            return Ok(authors);
+            var authorDtos = ConversionUtility.AuthorsToAuthorDtos(authors);
+
+            return Ok(authorDtos);
         }
         
         [HttpGet]
@@ -43,41 +46,51 @@ namespace Library.Controllers
             if (author == null)
                 return NotFound();
 
-            return Ok(author);
+            AuthorDto authorDto = ConversionUtility.AuthorToAuthorDto(author);
+
+            return Ok(authorDto);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public IHttpActionResult AddAuthor(Author author)
+        public IHttpActionResult AddAuthor(AuthorDto authorDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (author == null)
+            if (authorDto == null)
                 return BadRequest();
+
+            Author author = ConversionUtility.AuthorDtoToAuthor(authorDto);
 
             var authorInDb = _context.Authors.Add(author);
 
             _context.SaveChanges();
 
-            return Ok(authorInDb);
+            var authorToReturn = ConversionUtility.AuthorToAuthorDto(authorInDb);
+
+            return Ok(authorToReturn);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut]
-        public IHttpActionResult UpdateAuthor(int id, Author author)
+        public IHttpActionResult UpdateAuthor(int id, AuthorDto authorDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (id != author.Id)
+            if (id != authorDto.Id)
                 return BadRequest();
+
+            Author author = ConversionUtility.AuthorDtoToAuthor(authorDto);
 
             _context.Entry(author).State = EntityState.Modified;
 
             _context.SaveChanges();
 
-            return Ok(author);
+            var authorToReturn = ConversionUtility.AuthorToAuthorDto(author);
+
+            return Ok(authorToReturn);
         }
 
         [Authorize(Roles = "admin")]
