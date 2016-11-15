@@ -1,4 +1,5 @@
 ﻿using Library.Models;
+using Library.DTOs;
 using System;
 using System.Data.Entity;
 using System.Collections.Generic;
@@ -32,7 +33,9 @@ namespace Library.Controllers
             if (books == null)
                 return NotFound();
 
-            return Ok(books);
+            var bookDtos = ConversionUtility.BooksToBookDtos(books);
+
+            return Ok(bookDtos);
         }
 
         [HttpGet]
@@ -43,18 +46,22 @@ namespace Library.Controllers
             if (book == null)
                 return NotFound();
 
-            return Ok(book);
+            var bookDto = ConversionUtility.BookToBookDto(book);
+
+            return Ok(bookDto);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public IHttpActionResult AddBook(Book book)
+        public IHttpActionResult AddBook(BookDto bookDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (book == null)
+            if (bookDto == null)
                 return BadRequest();
+
+            var book = ConversionUtility.BookDtoToBook(bookDto);
 
             var bookInDb = _context.Books.Add(book);
 
@@ -63,24 +70,30 @@ namespace Library.Controllers
             //needed to return author data alongside book data
             var addedBook = _context.Books.Include(b => b.Author).Single(b => b.Id == bookInDb.Id);
 
-            return Ok(addedBook);
+            var bookToReturn = ConversionUtility.BookToBookDto(addedBook);
+
+            return Ok(bookToReturn);
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut]
-        public IHttpActionResult UpdateBook(int id, Book book)
+        public IHttpActionResult UpdateBook(int id, BookDto bookDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (id != book.Id)
+            if (id != bookDto.Id)
                 return BadRequest();
+
+            var book = ConversionUtility.BookDtoToBook(bookDto);
 
             _context.Entry(book).State = EntityState.Modified;
 
             _context.SaveChanges();
 
-            return Ok(book);
+            var bookToReturn = ConversionUtility.BookToBookDto(book);
+
+            return Ok(bookToReturn);
         }
 
         [Authorize(Roles = "admin")]
