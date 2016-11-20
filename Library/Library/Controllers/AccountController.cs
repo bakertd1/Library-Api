@@ -66,6 +66,21 @@ namespace Library.Controllers
             };
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("UsernameExists")]
+        public IHttpActionResult UsernameExists([FromBody] string username)
+        {
+            var user = UserManager.FindByEmail(username);
+
+            if (user == null)
+            {
+                return Ok(false);
+            }
+
+            return Ok(true);
+        }
+
         // POST api/Account/Logout
         [Route("Logout")]
         public IHttpActionResult Logout()
