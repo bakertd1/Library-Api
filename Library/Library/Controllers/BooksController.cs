@@ -91,6 +91,9 @@ namespace Library.Controllers
 
             _context.SaveChanges();
 
+            //needed to return author data alongside book data
+            book = _context.Books.Include(b => b.Author).Single(b => b.Id == book.Id);
+
             var bookToReturn = ConversionUtility.BookToBookDto(book);
 
             return Ok(bookToReturn);
