@@ -18,6 +18,7 @@ using Library.Models;
 using Library.Providers;
 using Library.Results;
 using System.Dynamic;
+using System.Web.Security;
 
 namespace Library.Controllers
 {
@@ -98,6 +99,26 @@ namespace Library.Controllers
             }
 
             return Ok(usersAndRoles.ToArray());
+        }
+
+        //DELETE api/Account/DeleteUser
+        [HttpDelete]
+        [Authorize(Roles = "admin")]
+        [Route("DeleteUser")]
+        public IHttpActionResult DeleteUser([FromBody] string email)
+        {
+            if (email == null || email == "admin@test.com")
+                return BadRequest();
+
+            var user = UserManager.FindByEmail(email);
+
+            if (user == null)
+                return NotFound();
+
+            if (UserManager.Delete(user) != IdentityResult.Success)
+                return BadRequest("Unable to delete this user");
+
+            return Ok();
         }
 
         //POST api/Account/UsernameExists
