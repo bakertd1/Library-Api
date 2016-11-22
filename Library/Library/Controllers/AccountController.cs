@@ -13,9 +13,11 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using System.Linq;
 using Library.Models;
 using Library.Providers;
 using Library.Results;
+using System.Dynamic;
 
 namespace Library.Controllers
 {
@@ -66,6 +68,39 @@ namespace Library.Controllers
             };
         }
 
+        //GET api/Account/GetUsers
+        [Authorize(Roles = "admin")]
+        [Route("GetUsers")]
+        public IHttpActionResult GetUsers()
+        { 
+            //get email and id of each user (id needed to get user roles)
+            var users = UserManager.Users.Select(x => new {x.Email, x.Id }).ToList();
+
+            if (users == null)
+                return NotFound();
+
+            //need a list of dynamic objects to assign custom fields to each user
+            //the only necessary information is email and a boolean to determine if user is an admin
+            List<dynamic> usersAndRoles = new List<dynamic>();
+
+            foreach(var user in users)
+            {
+                dynamic usr = new ExpandoObject();
+                
+                usr.Email = user.Email;
+
+                if (UserManager.IsInRole(user.Id, "admin"))
+                    usr.Admin = true;
+                else
+                    usr.Admin = false;
+
+                usersAndRoles.Add(usr);
+            }
+
+            return Ok(usersAndRoles.ToArray());
+        }
+
+        //POST api/Account/UsernameExists
         [HttpPost]
         [AllowAnonymous]
         [Route("UsernameExists")]
