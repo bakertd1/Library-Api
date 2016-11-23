@@ -101,6 +101,46 @@ namespace Library.Controllers
             return Ok(usersAndRoles.ToArray());
         }
 
+        //POST api/Account/MakeUserAdmin
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [Route("MakeUserAdmin")]
+        public IHttpActionResult MakeUserAdmin([FromBody] string email)
+        {
+            if (email == null || email == "admin@test.com")
+                return BadRequest();
+
+            var user = UserManager.FindByEmail(email);
+
+            if (user == null)
+                return NotFound();
+
+            if (UserManager.AddToRole(user.Id, "admin") != IdentityResult.Success)
+                return BadRequest();
+
+            return Ok();
+        }
+
+        //POST api/Account/MakeUserAdmin
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [Route("RevokeAdmin")]
+        public IHttpActionResult RevokeAdmin([FromBody] string email)
+        {
+            if (email == null || email == "admin@test.com")
+                return BadRequest();
+
+            var user = UserManager.FindByEmail(email);
+
+            if (user == null)
+                return NotFound();
+
+            if (UserManager.RemoveFromRole(user.Id, "admin") != IdentityResult.Success)
+                return BadRequest();
+
+            return Ok();
+        }
+
         //DELETE api/Account/DeleteUser
         [HttpDelete]
         [Authorize(Roles = "admin")]
