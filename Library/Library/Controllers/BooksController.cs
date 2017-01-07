@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
@@ -14,15 +15,25 @@ namespace Library.Controllers
     public class BooksController : ApiController
     {
         private ApplicationDbContext _context;
+        AccountController ac;
 
         public BooksController()
         {
             _context = new ApplicationDbContext();
+            ac = new AccountController();
         }
 
         ~BooksController()
         {
             _context.Dispose();
+        }
+
+        private string GetEmailFromRequestHeader ( )
+        {
+            ClaimsPrincipal principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
+            var Name = ClaimsPrincipal.Current.Identity.Name;
+
+            return Name;
         }
 
         [HttpGet]
@@ -55,6 +66,11 @@ namespace Library.Controllers
         [HttpPost]
         public IHttpActionResult AddBook(BookDto bookDto)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -79,6 +95,11 @@ namespace Library.Controllers
         [HttpPut]
         public IHttpActionResult UpdateBook(int id, BookDto bookDto)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -103,6 +124,11 @@ namespace Library.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteBook(int id)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             var book = _context.Books.SingleOrDefault(b => b.Id == id);
 
             if (book == null)

@@ -52,6 +52,14 @@ namespace Library.Controllers
             }
         }
 
+        private string GetEmailFromRequestHeader()
+        {
+            ClaimsPrincipal principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
+            var Name = ClaimsPrincipal.Current.Identity.Name;
+
+            return Name;
+        }
+
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET api/Account/UserInfo
@@ -115,6 +123,11 @@ namespace Library.Controllers
             if (user == null)
                 return NotFound();
 
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             if (UserManager.AddToRole(user.Id, "admin") != IdentityResult.Success)
                 return BadRequest();
 
@@ -127,13 +140,19 @@ namespace Library.Controllers
         [Route("RevokeAdmin")]
         public IHttpActionResult RevokeAdmin([FromBody] string email)
         {
-            if (email == null || email == "admin@test.com")
+
+            if (email == null || email == "admin@test.com" || email == "example-admin@test.com")
                 return BadRequest();
 
             var user = UserManager.FindByEmail(email);
 
             if (user == null)
                 return NotFound();
+
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
 
             if (UserManager.RemoveFromRole(user.Id, "admin") != IdentityResult.Success)
                 return BadRequest();
@@ -147,13 +166,18 @@ namespace Library.Controllers
         [Route("DeleteUser")]
         public IHttpActionResult DeleteUser([FromBody] string email)
         {
-            if (email == null || email == "admin@test.com")
+            if (email == null || email == "admin@test.com" || email == "example-admin@test.com")
                 return BadRequest();
 
             var user = UserManager.FindByEmail(email);
 
             if (user == null)
                 return NotFound();
+
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
 
             if (UserManager.Delete(user) != IdentityResult.Success)
                 return BadRequest("Unable to delete this user");
@@ -229,6 +253,11 @@ namespace Library.Controllers
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

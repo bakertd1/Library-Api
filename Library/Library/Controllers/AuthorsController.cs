@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
@@ -23,6 +24,14 @@ namespace Library.Controllers
         ~AuthorsController()
         {
             _context.Dispose();
+        }
+
+        private string GetEmailFromRequestHeader ( )
+        {
+            ClaimsPrincipal principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
+            var Name = ClaimsPrincipal.Current.Identity.Name;
+
+            return Name;
         }
 
         [HttpGet]
@@ -55,6 +64,11 @@ namespace Library.Controllers
         [HttpPost]
         public IHttpActionResult AddAuthor(AuthorDto authorDto)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest("This user cannot make changes to the database!");
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -76,6 +90,11 @@ namespace Library.Controllers
         [HttpPut]
         public IHttpActionResult UpdateAuthor(int id, AuthorDto authorDto)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -97,6 +116,11 @@ namespace Library.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteAuthor(int id)
         {
+            var Name = GetEmailFromRequestHeader();
+
+            if ( Name == "example-admin@test.com" )
+                return BadRequest( "This user cannot make changes to the database!" );
+
             var author = _context.Authors.SingleOrDefault(a => a.Id == id);
 
             if (author == null)
