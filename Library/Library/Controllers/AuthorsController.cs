@@ -2,6 +2,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Library.Data;
 using Library.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Library.Controllers
 {
@@ -17,6 +18,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetAuthors()
         {
             var authors = _context.Authors.ToList();
@@ -27,6 +29,7 @@ namespace Library.Controllers
             return Ok(authors);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetAuthor(int id)
         {
@@ -38,6 +41,7 @@ namespace Library.Controllers
             return Ok(author);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public IActionResult AddAuthor([FromBody] Author author)
         {
@@ -50,6 +54,7 @@ namespace Library.Controllers
             return Ok(authorInDb);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public IActionResult UpdateAuthor(int id, [FromBody] Author author)
         {
@@ -62,6 +67,7 @@ namespace Library.Controllers
             return Ok(updatedAuthor);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteAuthor(int id)
         {

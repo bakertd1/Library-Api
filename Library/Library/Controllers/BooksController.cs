@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Library.Data;
 using Library.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Library.Controllers
 {
@@ -17,6 +18,7 @@ namespace Library.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetBooks()
         {
@@ -28,6 +30,7 @@ namespace Library.Controllers
             return Ok(books);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetBook(int id)
         {
@@ -39,6 +42,7 @@ namespace Library.Controllers
             return Ok(book);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public IActionResult AddBook([FromBody] Book book)
         {
@@ -53,6 +57,7 @@ namespace Library.Controllers
             return Ok(bookWithAuthor);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public IActionResult UpdateBook(int id, [FromBody] Book book)
         {
@@ -66,6 +71,7 @@ namespace Library.Controllers
             return Ok(bookWithAuthor);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteBook(int id)
         {
