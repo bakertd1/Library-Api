@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Library.Data;
 using Library.Models;
 using Library.Services;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Library
 {
@@ -57,6 +59,8 @@ namespace Library
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -74,6 +78,20 @@ namespace Library
             app.UseStaticFiles();
 
             app.UseIdentity();
+
+            var secret = Encoding.UTF8.GetBytes(Configuration["auth0:clientSecret"]);
+
+            var options = new JwtBearerOptions
+            {
+                TokenValidationParameters =
+                {
+                    ValidIssuer = $"https://{Configuration["auth0:domain"]}/",
+                    ValidAudience = Configuration["auth0:clientId"],
+                    IssuerSigningKey = new SymmetricSecurityKey(secret)
+                }
+            };
+
+            app.UseJwtBearerAuthentication(options);
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
